@@ -1,12 +1,16 @@
-export const runtime = "nodejs";
-
-import { NextResponse } from "next/server";
+ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getUserFromToken } from "@/lib/auth";
 
+export const runtime = "nodejs";
+
 export async function POST(req: Request) {
-  const user = getUserFromToken();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // ✅ Await this
+  const user = await getUserFromToken();
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const { amount, recipient } = await req.json();
   if (!amount || amount <= 0 || !recipient) {
@@ -29,7 +33,7 @@ export async function POST(req: Request) {
     data: { balance: { decrement: amount } },
   });
 
-  await prisma.user.update({
+  const updatedReceiver = await prisma.user.update({
     where: { id: receiver.id },
     data: { balance: { increment: amount } },
   });
@@ -37,10 +41,23 @@ export async function POST(req: Request) {
   // Record transactions
   await prisma.transaction.createMany({
     data: [
-      { type: "transfer-out", amount, balance: updatedSender.balance, userId: sender.id },
-      { type: "transfer-in", amount, balance: receiver.balance + amount, userId: receiver.id },
+      {
+        type: "transfer-out",
+        amount,
+        balance: updatedSender.balance,
+        userId: sender.id,
+      },
+      {
+        type: "transfer-in",
+        amount,
+        balance: updatedReceiver.balance,
+        userId: receiver.id,
+      },
     ],
   });
 
-  return NextResponse.json({ message: "Transfer successful", balance: updatedSender.balance });
+  return NextResponse.json({
+    message: "Transfer successful",
+    balance: updatedSender.balance,
+  });
 }

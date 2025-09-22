@@ -1,12 +1,17 @@
-export const runtime = "nodejs";
-
-import { NextResponse } from "next/server";
+ 
+ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getUserFromToken } from "@/lib/auth";
 
+export const runtime = "nodejs";
+
 export async function POST(req: Request) {
-  const user = getUserFromToken();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // ✅ Await this
+  const user = await getUserFromToken();
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const { amount } = await req.json();
   if (!amount || amount <= 0) {
@@ -32,5 +37,8 @@ export async function POST(req: Request) {
     },
   });
 
-  return NextResponse.json({ message: "Withdrawal successful", balance: updatedUser.balance });
+  return NextResponse.json({
+    message: "Withdrawal successful",
+    balance: updatedUser.balance,
+  });
 }
