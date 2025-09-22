@@ -1,10 +1,10 @@
- export const runtime = "nodejs";
+ 
 
  import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { signToken } from "@/lib/auth";
-
+ export const runtime = "nodejs";
 function generateAccountNo() {
   // Example: ACCT-12345678
   const random = Math.floor(10000000 + Math.random() * 90000000);

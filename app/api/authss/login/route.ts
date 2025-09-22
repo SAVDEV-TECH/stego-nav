@@ -1,10 +1,10 @@
-export const runtime = "nodejs";
+ 
 
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { signToken } from "@/lib/auth";
-
+export const runtime = "nodejs";
 export async function POST(req: Request) {
   try {
     const body = await req.json();

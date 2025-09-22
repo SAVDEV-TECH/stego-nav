@@ -1,10 +1,10 @@
 // app/api/auth/me/route.ts
-export const runtime = "nodejs";
+ 
 
 import { NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-
+export const runtime = "nodejs";
 export async function GET(req: Request) {
   try {
     const cookie = req.headers.get("cookie") || "";

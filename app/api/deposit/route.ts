@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from '@/lib/prisma' // adjust path if needed
+export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
