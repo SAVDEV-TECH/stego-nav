@@ -44,12 +44,13 @@ export default function HomePage() {
           animate={{ rotate: [0, 5, -5, 5, 0] }}
           transition={{ repeat: Infinity, duration: 4 }}
         >
-          <Image
+          {/* <Image
             src="https://images.unsplash.com/photo-1591696331112-3f30827946da?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
             alt="Secure Steganography"
             fill
             className="object-cover rounded-xl shadow-2xl"
-          />
+          /> */}
+          
         </motion.div>
       </motion.div>
 

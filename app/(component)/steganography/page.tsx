@@ -3,6 +3,7 @@
 import React, { useRef, useState } from "react";
 import CryptoJS from "crypto-js";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 /* ---------- Utility Helpers ---------- */
 function strToUtf8Bytes(str: string) {
@@ -83,7 +84,7 @@ export default function StegoPage() {
     setCoverSrc(url);
     setStegoSrc(null);
     setDecodedMsg(null);
-    const img = new Image();
+    const img = new window.Image();
     img.onload = () => {
       const canvas = canvasRef.current!;
       canvas.width = img.width;
@@ -129,8 +130,10 @@ export default function StegoPage() {
       const dataUrl = canvas.toDataURL("image/png");
       setStegoSrc(dataUrl);
       setStatus("✅ Message hidden successfully!");
-    } catch (err: any) {
-      setStatus("❌ " + err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setStatus("❌ " + err.message);
+      }
     }
   };
 
@@ -161,8 +164,10 @@ export default function StegoPage() {
       const plain = decryptMessage(cipherText, key);
       setDecodedMsg(plain);
       setStatus("✅ Message decoded successfully!");
-    } catch (err: any) {
-      setStatus("❌ " + err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setStatus("❌ " + err.message);
+      }
     }
   };
 
@@ -204,7 +209,13 @@ export default function StegoPage() {
           onChange={handleImageUpload}
         />
         {coverSrc ? (
-          <img src={coverSrc} alt="preview" className="mx-auto max-h-64 rounded-xl shadow" />
+          <Image
+            src={coverSrc}
+            alt="preview"
+            width={400}
+            height={400}
+            className="mx-auto max-h-64 rounded-xl shadow object-contain"
+          />
         ) : (
           <p className="text-gray-500">Click to upload an image</p>
         )}
