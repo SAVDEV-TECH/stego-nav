@@ -1,12 +1,16 @@
-export const runtime = "nodejs";
-
-import { NextResponse } from "next/server";
+ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getUserFromToken } from "@/lib/auth";
 
+export const runtime = "nodejs"; // ✅ jwt needs node runtime
+
 export async function GET() {
-  const user = getUserFromToken();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // ✅ await the function
+  const user = await getUserFromToken();  
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const dbUser = await prisma.user.findUnique({
     where: { id: user.id },
