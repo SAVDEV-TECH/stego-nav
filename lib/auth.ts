@@ -19,9 +19,10 @@ export function verifyToken(token: string) {
   }
 }
 
-// 🔥 New helper
-export function getUserFromToken() {
-  const token = cookies().get("token")?.value;
+// 🔥 Fixed helper for Next.js 15
+export async function getUserFromToken() {
+  const cookieStore = await cookies(); // ✅ await cookies()
+  const token = cookieStore.get("token")?.value;
   if (!token) return null;
 
   try {

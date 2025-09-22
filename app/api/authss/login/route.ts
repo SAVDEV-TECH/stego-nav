@@ -1,4 +1,6 @@
- import { NextResponse } from "next/server";
+export const runtime = "nodejs";
+
+import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { signToken } from "@/lib/auth";

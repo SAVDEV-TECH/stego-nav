@@ -1,4 +1,6 @@
 // app/api/auth/me/route.ts
+export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 import prisma from "@/lib/prisma";
