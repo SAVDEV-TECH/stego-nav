@@ -1,38 +1,32 @@
- // This is your Prisma schema file
-// Learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-generator client {
+ generator client {
   provider = "prisma-client-js"
-  // optional: remove `output` unless you really want a custom path
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
+  id        Int           @id @default(autoincrement())
   name      String
-  email     String    @unique
+  email     String        @unique
   phone     String?
   password  String
-  accountNo String    @unique
-  balance   Float     @default(0)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
+  accountNo String        @unique
+  balance   Float         @default(0)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
   transactions Transaction[]
 }
 
 model Transaction {
-  id          Int      @id @default(autoincrement())
-  type        String
-  amount      Float
-  balance     Float
-  createdAt   DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  type      String   // deposit, withdraw, transfer
+  amount    Float
+  balance   Float
+  createdAt DateTime @default(now())
 
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
 }
-

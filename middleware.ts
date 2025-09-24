@@ -7,7 +7,7 @@ export function middleware(req: NextRequest) {
 
   if (!token) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  } 
 
   const decoded = verifyToken(token);
   if (!decoded) {

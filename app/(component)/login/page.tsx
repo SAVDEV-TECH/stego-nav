@@ -30,7 +30,7 @@ export default function LoginPage() {
 
     if (res.ok) {
       setMessage("Login successful! Redirecting...");
-      setTimeout(() => (window.location.href = "/dashboard"), 1000);
+      setTimeout(() => (window.location.href = "/steganography"), 1000);
     } else {
       setMessage(data.error || "Login failed.");
     }
