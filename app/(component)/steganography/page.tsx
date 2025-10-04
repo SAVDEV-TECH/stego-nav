@@ -4,6 +4,7 @@ import React, { useRef, useState } from "react";
 import CryptoJS from "crypto-js";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import SecurityModal from './modalsecurity/page'
 
 /* ---------- Utility Helpers ---------- */
 function strToUtf8Bytes(str: string) {
@@ -65,6 +66,8 @@ function extractBytesFromImageData(imgData: ImageData, byteLen: number) {
 
 /* ---------- Component ---------- */
 export default function StegoPage() {
+  const [showSecurityModal, setShowSecurityModal] = useState(false);
+   const [failedAttempts, setFailedAttempts] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [tab, setTab] = useState<"embed" | "decode">("embed");
 
@@ -94,7 +97,39 @@ export default function StegoPage() {
     };
     img.src = url;
   };
+ /* Decode */
+  const handleDecode = () => {
+  setStatus(null);
+  try {
+    if (!canvasRef.current) throw new Error("No image loaded");
+    if (!key) throw new Error("Key required");
 
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d")!;
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    const header = extractBytesFromImageData(imgData, 4);
+    const cipherLen = bytesToNumber(header);
+    const cipherBytes = extractBytesFromImageData(imgData, 4 + cipherLen).slice(4);
+    const cipherText = bytesToStr(cipherBytes);
+
+    const plain = decryptMessage(cipherText, key);
+    setDecodedMsg(plain);
+    setStatus("✅ Message decoded successfully!");
+    setFailedAttempts(0); // Reset on success
+  } catch (err) {
+    if (err instanceof Error) {
+      // Check if it's a wrong password error
+      if (err.message.includes("Wrong key") || err.message.includes("corrupted data")) {
+        setFailedAttempts(prev => prev + 1);
+        setShowSecurityModal(true); // Trigger security modal
+        setStatus(""); // Clear status when modal shows
+      } else {
+        setStatus("❌ " + err.message);
+      }
+    }
+  }
+};
   const encryptMessage = (plain: string, secret: string) =>
     CryptoJS.AES.encrypt(plain, secret).toString();
 
@@ -145,31 +180,31 @@ export default function StegoPage() {
     a.click();
   };
 
-  /* Decode */
-  const handleDecode = () => {
-    setStatus(null);
-    try {
-      if (!canvasRef.current) throw new Error("No image loaded");
-      if (!key) throw new Error("Key required");
+  
+  // const handleDecode = () => {
+  //   setStatus(null);
+  //   try {
+  //     if (!canvasRef.current) throw new Error("No image loaded");
+  //     if (!key) throw new Error("Key required");
 
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d")!;
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  //     const canvas = canvasRef.current;
+  //     const ctx = canvas.getContext("2d")!;
+  //     const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-      const header = extractBytesFromImageData(imgData, 4);
-      const cipherLen = bytesToNumber(header);
-      const cipherBytes = extractBytesFromImageData(imgData, 4 + cipherLen).slice(4);
-      const cipherText = bytesToStr(cipherBytes);
+  //     const header = extractBytesFromImageData(imgData, 4);
+  //     const cipherLen = bytesToNumber(header);
+  //     const cipherBytes = extractBytesFromImageData(imgData, 4 + cipherLen).slice(4);
+  //     const cipherText = bytesToStr(cipherBytes);
 
-      const plain = decryptMessage(cipherText, key);
-      setDecodedMsg(plain);
-      setStatus("✅ Message decoded successfully!");
-    } catch (err) {
-      if (err instanceof Error) {
-        setStatus("❌ " + err.message);
-      }
-    }
-  };
+  //     const plain = decryptMessage(cipherText, key);
+  //     setDecodedMsg(plain);
+  //     setStatus("✅ Message decoded successfully!");
+  //   } catch (err) {
+  //     if (err instanceof Error) {
+  //       setStatus("❌ " + err.message);
+  //     }
+  //   }
+  // };
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
@@ -227,7 +262,7 @@ export default function StegoPage() {
       {tab === "embed" && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
           <input
-            type="text"
+            type="password"
             value={key}
             onChange={(e) => setKey(e.target.value)}
             placeholder="Secret Key"
@@ -262,7 +297,7 @@ export default function StegoPage() {
       {tab === "decode" && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
           <input
-            type="text"
+            type="password"
             value={key}
             onChange={(e) => setKey(e.target.value)}
             placeholder="Enter Key to Decode"
@@ -284,6 +319,12 @@ export default function StegoPage() {
       )}
 
       {status && <p className="text-center text-sm">{status}</p>}
+      {/* Security Modal */}
+<SecurityModal
+  isOpen={showSecurityModal}
+  onClose={() => setShowSecurityModal(false)}
+  attemptCount={failedAttempts}
+/>
     </div>
   );
 }

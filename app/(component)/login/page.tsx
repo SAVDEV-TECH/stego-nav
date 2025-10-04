@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import SecurityModal from '../steganography/modalsecurity/page'
 
 export default function LoginPage() {
   const [form, setForm] = useState({
@@ -9,6 +10,8 @@ export default function LoginPage() {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+    const [showSecurityModal, setShowSecurityModal] = useState(false);
+   const [failedAttempts, setFailedAttempts] = useState(0);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -32,6 +35,8 @@ export default function LoginPage() {
       setMessage("Login successful! Redirecting...");
       setTimeout(() => (window.location.href = "/steganography"), 1000);
     } else {
+       setFailedAttempts(prev => prev + 1);
+        setShowSecurityModal(true);
       setMessage(data.error || "Login failed.");
     }
   };
@@ -71,6 +76,11 @@ export default function LoginPage() {
 
         {message && <p className="mt-2 text-sm">{message}</p>}
       </form>
+      <SecurityModal
+  isOpen={showSecurityModal}
+  onClose={() => setShowSecurityModal(false)}
+  attemptCount={failedAttempts}
+/>
     </div>
   );
 }
