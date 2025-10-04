@@ -10,7 +10,7 @@ export default function useAuth() {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const res = await fetch("/api/authss/me");
+        const res = await fetch("/api/authss/me");  
         if (res.ok) {
           const data = await res.json();
           setUser(data.user);
