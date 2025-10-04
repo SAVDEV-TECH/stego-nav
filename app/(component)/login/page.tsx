@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import SecurityModal from '../steganography/modalsecurity/page'
+import SecurityModal from '../../compo/modalsecurity/page'
 
 export default function LoginPage() {
   const [form, setForm] = useState({
