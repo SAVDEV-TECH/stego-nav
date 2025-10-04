@@ -4,7 +4,7 @@ import React, { useRef, useState } from "react";
 import CryptoJS from "crypto-js";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import SecurityModal from '../../compo/modalsecurity'
+import SecurityModal from '@/compo/modalsecurity'
 
 /* ---------- Utility Helpers ---------- */
 function strToUtf8Bytes(str: string) {

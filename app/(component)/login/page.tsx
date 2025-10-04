@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import SecurityModal from '../../compo/modalsecurity'
+import SecurityModal from '@/compo/modalsecurity.tsx'
 
 export default function LoginPage() {
   const [form, setForm] = useState({
